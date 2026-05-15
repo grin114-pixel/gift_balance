@@ -41,7 +41,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['pwa-icon.png', 'pwa-192.png', 'pwa-512.png'],
+      includeAssets: ['wallet-app-icon.svg'],
       manifest: {
         name: '잔액 얼마',
         short_name: '잔액 얼마',
@@ -53,21 +53,15 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'pwa-192.png',
-            sizes: '192x192',
-            type: 'image/png',
+            src: 'wallet-app-icon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
             purpose: 'any',
           },
           {
-            src: 'pwa-512.png',
+            src: 'wallet-app-icon.svg',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: 'pwa-512.png',
-            sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'maskable',
           },
         ],
