@@ -1,6 +1,7 @@
 import { useState, useId } from 'react'
-import { Mail, Lock, UserPlus, Wallet } from 'lucide-react'
+import { User, Lock, UserPlus, Wallet } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { resolveAuthEmail, usernameToAuthEmail } from '../lib/authIdentity'
 import './LoginPage.css'
 
 function GiftIcon() {
@@ -42,16 +43,16 @@ function onlyDigits(val) {
   return val.replace(/\D/g, '').slice(0, 4)
 }
 
-function EmailField({ value, onChange }) {
+function NameField({ value, onChange, autoComplete = 'username' }) {
   return (
     <label className="auth-field">
-      <span>이메일</span>
+      <span>이름</span>
       <div className="auth-input-wrap">
-        <span className="auth-input-icon"><Mail size={15} strokeWidth={1.6} /></span>
+        <span className="auth-input-icon"><User size={15} strokeWidth={1.6} /></span>
         <input
-          type="email"
-          autoComplete="email"
-          placeholder="example@email.com"
+          type="text"
+          autoComplete={autoComplete}
+          placeholder="이름 또는 아이디"
           value={value}
           onChange={onChange}
         />
@@ -89,7 +90,7 @@ const Footer = () => (
 export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
   const [view, setView] = useState(recoveryMode ? 'reset' : 'login')
 
-  const [loginEmail, setLoginEmail] = useState('')
+  const [loginName, setLoginName] = useState('')
   const [loginPin, setLoginPin] = useState('')
   const [loginError, setLoginError] = useState('')
   const [loginLoading, setLoginLoading] = useState(false)
@@ -97,18 +98,18 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
     return typeof window !== 'undefined' && window.localStorage.getItem(REMEMBER_KEY) === 'true'
   })
 
-  const [signupEmail, setSignupEmail] = useState('')
+  const [signupName, setSignupName] = useState('')
   const [signupPin, setSignupPin] = useState('')
   const [signupPin2, setSignupPin2] = useState('')
   const [signupError, setSignupError] = useState('')
   const [signupLoading, setSignupLoading] = useState(false)
 
-  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotName, setForgotName] = useState('')
   const [forgotError, setForgotError] = useState('')
   const [forgotLoading, setForgotLoading] = useState(false)
   const [forgotDone, setForgotDone] = useState(false)
 
-  const [changeEmail, setChangeEmail] = useState('')
+  const [changeName, setChangeName] = useState('')
   const [changeCurrentPin, setChangeCurrentPin] = useState('')
   const [changeNewPin, setChangeNewPin] = useState('')
   const [changeError, setChangeError] = useState('')
@@ -124,16 +125,23 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
   async function handleLogin(e) {
     e.preventDefault()
     setLoginError('')
-    if (!loginEmail.trim()) { setLoginError('이메일을 입력해주세요.'); return }
+    if (!loginName.trim()) { setLoginError('이름을 입력해주세요.'); return }
     if (loginPin.length !== 4) { setLoginError('비밀번호 4자리를 입력해주세요.'); return }
+    let authEmail
+    try {
+      authEmail = resolveAuthEmail(loginName)
+    } catch {
+      setLoginError('이름을 입력해주세요.')
+      return
+    }
     setLoginLoading(true)
     const { error } = await supabase.auth.signInWithPassword({
-      email: loginEmail.trim(),
+      email: authEmail,
       password: toAuthPassword(loginPin),
     })
     setLoginLoading(false)
     if (error) {
-      setLoginError('이메일 또는 비밀번호가 올바르지 않아요.')
+      setLoginError('이름 또는 비밀번호가 올바르지 않아요.')
       return
     }
     if (rememberDevice) {
@@ -147,18 +155,27 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
   async function handleSignup(e) {
     e.preventDefault()
     setSignupError('')
-    if (!signupEmail.trim()) { setSignupError('이메일을 입력해주세요.'); return }
+    const displayName = signupName.trim()
+    if (!displayName) { setSignupError('이름을 입력해주세요.'); return }
     if (signupPin.length !== 4) { setSignupError('비밀번호 4자리를 입력해주세요.'); return }
     if (signupPin !== signupPin2) { setSignupError('비밀번호가 일치하지 않아요.'); return }
+    let authEmail
+    try {
+      authEmail = usernameToAuthEmail(displayName)
+    } catch {
+      setSignupError('이름을 입력해주세요.')
+      return
+    }
     setSignupLoading(true)
     const { data, error } = await supabase.auth.signUp({
-      email: signupEmail.trim(),
+      email: authEmail,
       password: toAuthPassword(signupPin),
+      options: { data: { display_name: displayName } },
     })
     setSignupLoading(false)
     if (error) {
       if (error.message.toLowerCase().includes('already')) {
-        setSignupError('이미 가입된 이메일이에요.')
+        setSignupError('이미 가입된 이름이에요.')
       } else {
         setSignupError('가입에 실패했어요. 다시 시도해주세요.')
       }
@@ -166,7 +183,7 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
     }
     if (data?.session) return
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: signupEmail.trim(),
+      email: authEmail,
       password: toAuthPassword(signupPin),
     })
     if (!signInError) return
@@ -176,9 +193,16 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
   async function handleForgot(e) {
     e.preventDefault()
     setForgotError('')
-    if (!forgotEmail.trim()) { setForgotError('이메일을 입력해주세요.'); return }
+    if (!forgotName.trim()) { setForgotError('이름을 입력해주세요.'); return }
+    let authEmail
+    try {
+      authEmail = resolveAuthEmail(forgotName)
+    } catch {
+      setForgotError('이름을 입력해주세요.')
+      return
+    }
     setForgotLoading(true)
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+    const { error } = await supabase.auth.resetPasswordForEmail(authEmail, {
       redirectTo: window.location.origin,
     })
     setForgotLoading(false)
@@ -192,17 +216,24 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
   async function handleChange(e) {
     e.preventDefault()
     setChangeError('')
-    if (!changeEmail.trim()) { setChangeError('이메일을 입력해주세요.'); return }
+    if (!changeName.trim()) { setChangeError('이름을 입력해주세요.'); return }
     if (changeCurrentPin.length !== 4) { setChangeError('현재 비밀번호 4자리를 입력해주세요.'); return }
     if (changeNewPin.length !== 4) { setChangeError('새 비밀번호 4자리를 입력해주세요.'); return }
+    let authEmail
+    try {
+      authEmail = resolveAuthEmail(changeName)
+    } catch {
+      setChangeError('이름을 입력해주세요.')
+      return
+    }
     setChangeLoading(true)
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: changeEmail.trim(),
+      email: authEmail,
       password: toAuthPassword(changeCurrentPin),
     })
     if (signInError) {
       setChangeLoading(false)
-      setChangeError('이메일 또는 현재 비밀번호가 올바르지 않아요.')
+      setChangeError('이름 또는 현재 비밀번호가 올바르지 않아요.')
       return
     }
     const { error: updateError } = await supabase.auth.updateUser({
@@ -305,7 +336,7 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
           {brand}
           <h2 className="auth-subtitle">회원 가입하기</h2>
           <form className="auth-form" onSubmit={handleSignup}>
-            <EmailField value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} />
+            <NameField value={signupName} onChange={(e) => setSignupName(e.target.value)} />
             <PinField label="비밀번호 (숫자 4자리)" value={signupPin} onChange={setSignupPin} />
             <PinField label="비밀번호 확인" value={signupPin2} onChange={setSignupPin2} />
             {signupError && <p className="auth-error">{signupError}</p>}
@@ -329,8 +360,8 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
           <h2 className="auth-subtitle">비밀번호 찾기</h2>
           {forgotDone ? (
             <div className="auth-done">
-              <p>비밀번호 재설정 링크를 이메일로 보냈어요.</p>
-              <p>이메일을 확인해주세요.</p>
+              <p>비밀번호 재설정 링크를 보냈어요.</p>
+              <p>이메일로 가입한 계정이 있다면 확인해주세요.</p>
               <button className="auth-btn-primary" onClick={goLogin}>
                 <GiftIcon />
                 로그인으로 이동
@@ -338,7 +369,7 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
             </div>
           ) : (
             <form className="auth-form" onSubmit={handleForgot}>
-              <EmailField value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} />
+              <NameField value={forgotName} onChange={(e) => setForgotName(e.target.value)} />
               {forgotError && <p className="auth-error">{forgotError}</p>}
               <button type="submit" className="auth-btn-primary" disabled={forgotLoading}>
                 <GiftIcon />
@@ -370,7 +401,7 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
             </div>
           ) : (
             <form className="auth-form" onSubmit={handleChange}>
-              <EmailField value={changeEmail} onChange={(e) => setChangeEmail(e.target.value)} />
+              <NameField value={changeName} onChange={(e) => setChangeName(e.target.value)} />
               <PinField label="현재 비밀번호" value={changeCurrentPin} onChange={setChangeCurrentPin} />
               <PinField label="새 비밀번호" value={changeNewPin} onChange={setChangeNewPin} />
               {changeError && <p className="auth-error">{changeError}</p>}
@@ -393,7 +424,11 @@ export default function LoginPage({ recoveryMode = false, onPasswordReset }) {
         {brand}
         <form className="auth-form" onSubmit={handleLogin}>
           <div className="auth-form-email-pin">
-            <EmailField value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
+            <NameField
+              value={loginName}
+              onChange={(e) => setLoginName(e.target.value)}
+              autoComplete="username"
+            />
             <PinField
               label="비밀번호 (숫자 4자리)"
               value={loginPin}

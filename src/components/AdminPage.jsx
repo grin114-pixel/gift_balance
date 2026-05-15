@@ -254,7 +254,10 @@ function AdminPageInner({ onBack }) {
     setDone(false)
   }
 
-  const filtered = users.filter((u) => u.email.toLowerCase().includes(query.toLowerCase()))
+  const filtered = users.filter((u) => {
+    const label = (u.displayName ?? u.email ?? '').toLowerCase()
+    return label.includes(query.toLowerCase())
+  })
 
   return (
     <div className="adm-shell">
@@ -297,7 +300,7 @@ function AdminPageInner({ onBack }) {
             <input
               className="adm-search-input"
               type="search"
-              placeholder="이메일로 검색"
+              placeholder="이름으로 검색"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoComplete="off"
@@ -330,7 +333,7 @@ function AdminPageInner({ onBack }) {
                     if (e.key === 'Enter' || e.key === ' ') handleSelect(user)
                   }}
                 >
-                  <span className="adm-user-email">{user.email}</span>
+                  <span className="adm-user-email">{user.displayName ?? user.email}</span>
                   <span className="adm-user-meta">
                     마지막 로그인 {formatDate(user.last_sign_in_at)}
                   </span>
@@ -357,7 +360,7 @@ function AdminPageInner({ onBack }) {
                 <Check size={22} aria-hidden />
               </div>
               <p className="adm-done-msg">
-                <strong>{selected.email}</strong>의
+                <strong>{selected.displayName ?? selected.email}</strong>의
                 <br />
                 비밀번호가 변경됐어요.
               </p>
@@ -369,7 +372,7 @@ function AdminPageInner({ onBack }) {
             <>
               <div className="adm-target-box">
                 <Lock size={12} aria-hidden />
-                <span className="adm-target-email">{selected.email}</span>
+                <span className="adm-target-email">{selected.displayName ?? selected.email}</span>
               </div>
 
               <form className="adm-form" onSubmit={handleUpdatePassword}>

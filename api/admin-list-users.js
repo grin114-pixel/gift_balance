@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { authEmailToDisplayName } from '../src/lib/authIdentity.js'
 
 /**
  * GET /api/admin-list-users
@@ -51,6 +52,7 @@ export default async function handler(req, res) {
   const users = data.users.map((u) => ({
     id: u.id,
     email: u.email ?? '',
+    displayName: authEmailToDisplayName(u.email, u.user_metadata),
     created_at: u.created_at,
     last_sign_in_at: u.last_sign_in_at ?? null,
   }))
