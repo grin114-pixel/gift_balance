@@ -1,0 +1,1293 @@
+/* ── App layout ──────────────────────────────────── */
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* ── Header ──────────────────────────────────────── */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(111, 59, 232, 0.08);
+}
+
+.header-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  min-height: 56px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  min-width: 0;
+}
+
+.app-header-brand-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+
+.app-header-wallet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #6F3BE8;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.app-title {
+  font-family: var(--font-sans);
+  font-size: clamp(1.125rem, 4.2vw, 1.375rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: #2F1B69;
+  line-height: 1.15;
+  margin: 0;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.app-header-tagline {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: #9A8CBF;
+  font-weight: var(--fw-regular);
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  margin: 0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.header-lock-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: #B6A7E5;
+  transition: background 0.15s, color 0.15s;
+}
+.header-lock-btn:hover {
+  background: var(--primary-pale);
+  color: #6F3BE8;
+}
+
+/* ── Main content ────────────────────────────────── */
+.main-content {
+  flex: 1;
+  padding: 20px 20px 24px;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.main-content--fab {
+  padding-bottom: 128px;
+}
+
+/* ── Loading & Empty states ──────────────────────── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: var(--primary-light);
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid rgba(111, 59, 232, 0.2);
+  border-top-color: #6F3BE8;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 80px 0;
+  color: var(--primary-light);
+}
+
+.empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #A78BFA;
+  opacity: 0.55;
+  line-height: 0;
+}
+
+.empty-state p {
+  font-size: 0.875rem;
+  font-weight: var(--fw-medium);
+  color: #8B7AB8;
+}
+
+.empty-sub {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #A89EC9 !important;
+}
+
+/* ── Coupon list ─────────────────────────────────── */
+.coupons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Coupon card ─────────────────────────────────── */
+.coupon-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(111, 59, 232, 0.11);
+  box-shadow: 0 8px 24px rgba(111, 59, 232, 0.1);
+  transition: box-shadow 0.2s;
+}
+.coupon-card:hover {
+  box-shadow: 0 12px 28px rgba(111, 59, 232, 0.14);
+}
+.coupon-card--expired {
+  opacity: 0.72;
+  filter: grayscale(0.15);
+}
+
+/* Card top row: name (가운데 = 버튼 제외 남은 영역 기준) + actions */
+.coupon-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #E4E2EF;
+  border-bottom: 1px solid rgba(111, 59, 232, 0.12);
+}
+
+.coupon-card-top-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.coupon-balance-row--top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 8px calc(10px * 1.1 * 1.1);
+  border-radius: 14px;
+  border: 1px solid #E4DFF5;
+  background: #FFFFFF;
+  box-sizing: border-box;
+}
+
+.coupon-balance-row--top .coupon-balance-amount {
+  font-size: clamp(1.03125rem, 3.96vw, 1.2375rem);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.coupon-top-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #FFFFFF;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.coupon-top-icon-btn--edit {
+  color: #BAB7C9;
+  border: 1px solid #EBEAEF;
+}
+.coupon-top-icon-btn--edit:hover {
+  background: #F7F7FA;
+  border-color: #E0DFE8;
+  color: #9E9BB0;
+}
+.coupon-top-icon-btn--delete {
+  color: #F5A3B5;
+  border: 1px solid #FCE8ED;
+}
+.coupon-top-icon-btn--delete:hover {
+  background: #FFFBFC;
+  border-color: #FFDEE6;
+  color: #E8889E;
+}
+
+.coupon-card-top-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #47326F;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+/* Card body */
+.coupon-card-body {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 28px;
+  padding: 16px 20px 18px;
+  align-items: center;
+}
+
+@media (max-width: 400px) {
+  .coupon-card-body {
+    grid-template-columns: 96px 1fr;
+    gap: 24px;
+  }
+}
+
+/* Left: image only */
+.coupon-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coupon-img-wrap {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #F3EAFE;
+  border: 1px solid rgba(111, 59, 232, 0.08);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.coupon-img-wrap:disabled {
+  cursor: default;
+}
+.coupon-img-wrap:not(:disabled):hover {
+  opacity: 0.88;
+}
+
+.coupon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.coupon-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #B6A7E5;
+}
+
+/* Right: info — 유효기간 · 사용금액 · 내역보기 (사용금액 위·아래 여백 동일) */
+.coupon-card-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.coupon-date-line {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #9A8CBF;
+  line-height: 1.5;
+  margin: 0 0 calc(10px * 1.1) 0;
+  word-break: break-word;
+}
+
+.coupon-balance-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.coupon-balance-row.coupon-balance-row--top {
+  align-items: center;
+}
+
+.coupon-balance-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #9A8CBF;
+  flex-shrink: 0;
+}
+
+.coupon-balance-row--top .coupon-balance-label {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.coupon-balance-amount {
+  font-size: clamp(1.375rem, 5.5vw, 1.75rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #6F3BE8;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  min-width: 0;
+}
+.coupon-balance-amount--zero {
+  color: #B6A7E5;
+}
+
+/* Usage amount block (row + inline error) */
+.coupon-use-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 calc(10px * 1.1) 0;
+}
+
+/* Usage input row */
+.coupon-use-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.coupon-use-input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #DCCFFD;
+  border-radius: 14px;
+  background: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #47326F;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  text-align: right;
+  letter-spacing: -0.02em;
+}
+.coupon-use-input:focus {
+  border-color: #6F3BE8;
+  box-shadow: 0 0 0 3px rgba(111, 59, 232, 0.12);
+}
+.coupon-use-input::placeholder {
+  color: #B6A7E5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+}
+.coupon-use-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coupon-use-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #C4B5FD 0%, #A78BFA 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(111, 59, 232, 0.12);
+  transition: opacity 0.15s, transform 0.12s;
+}
+.coupon-use-btn:hover:not(:disabled) {
+  opacity: 0.95;
+}
+.coupon-use-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.coupon-use-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.coupon-use-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: block;
+}
+
+.coupon-use-error {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.45;
+  color: #C43D60;
+  margin: 0;
+}
+
+/* 내역보기 + 수정/삭제 (한 줄, 아이콘은 오른쪽 끝) */
+.coupon-card-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.coupon-card-actions-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* History button (label style matches .coupon-date-line) */
+.coupon-history-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0;
+  padding: 4px 10px 4px 0;
+  height: auto;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+  color: #9A8CBF;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.coupon-history-btn:hover {
+  background: rgba(154, 140, 191, 0.12);
+  color: #8B7AB8;
+}
+
+/* ── FAB ─────────────────────────────────────────── */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #8B5CF6 0%, #6F3BE8 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(111, 59, 232, 0.22);
+  display: grid;
+  place-items: center;
+  transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+  z-index: 20;
+}
+.fab:hover {
+  transform: scale(1.04);
+  box-shadow: 0 14px 32px rgba(111, 59, 232, 0.28);
+}
+.fab:active {
+  transform: scale(0.97);
+}
+
+.fab-plus {
+  font-size: 1.575rem;
+  font-weight: 300;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: -0.04em;
+  margin-top: -1px;
+}
+
+/* ── Modal overlay ───────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 27, 75, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  padding: 0 0 env(safe-area-inset-bottom, 0);
+}
+
+@media (min-width: 480px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+.modal-overlay--centered {
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+
+.modal-overlay--stack {
+  z-index: 110;
+}
+
+.modal-sheet {
+  background: #ffffff;
+  border-radius: 22px 22px 0 0;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 0 0 20px;
+  box-shadow: 0 -4px 24px rgba(111, 59, 232, 0.15);
+}
+
+@media (min-width: 480px) {
+  .modal-sheet {
+    border-radius: 22px;
+    max-width: 480px;
+    max-height: 88vh;
+  }
+}
+
+.modal-sheet--history {
+  max-height: 80vh;
+}
+
+.modal-overlay--centered .modal-sheet--history {
+  width: min(480px, 100%);
+  border-radius: 22px;
+}
+
+.modal-overlay--centered .modal-header {
+  border-radius: 22px 22px 0 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid rgba(111, 59, 232, 0.12);
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 1;
+  border-radius: 22px 22px 0 0;
+}
+
+.modal-title {
+  font-size: 0.9375rem;
+  font-weight: var(--fw-medium);
+  color: var(--text);
+}
+
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.modal-close-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #8B7AB8;
+  transition: background 0.15s;
+}
+.modal-close-btn:hover {
+  background: var(--primary-pale);
+  color: var(--primary);
+}
+
+/* ── Modal form ──────────────────────────────────── */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 18px 4px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  color: #4C3A6E;
+}
+
+.modal-field input {
+  height: 42px;
+  padding: 0 12px;
+  border: 1.5px solid rgba(111, 59, 232, 0.28);
+  border-radius: 10px;
+  background: #FAF8FF;
+  font-size: 0.875rem;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.modal-field input:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(111, 59, 232, 0.12);
+}
+.modal-field input::placeholder {
+  color: #A89EC9;
+  font-weight: 400;
+}
+
+/* coupon_book 참고 — 모달 폼의 .field (사용 기한 date 등) */
+.coupon-book-like-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #47326F;
+  font-weight: var(--fw-medium);
+}
+
+.coupon-book-like-form .field > span {
+  font-size: 0.8125rem;
+}
+
+.coupon-book-like-form .field input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #DCCFFD;
+  background: #fff;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: 0.875rem;
+  color: #47326F;
+}
+
+.coupon-book-like-form .field input:focus {
+  outline: 3px solid rgba(111, 59, 232, 0.15);
+  outline-offset: 2px;
+}
+
+/* 사용 기한: 표시 2026.5.14 + 버튼 → 숨긴 date에 showPicker (투명 오버레이 클릭 불가 대응) */
+.coupon-book-like-form .field-date-shell {
+  position: relative;
+  display: block;
+  border-radius: 16px;
+  border: 1px solid #DCCFFD;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.coupon-book-like-form .field-date-shell:focus-within {
+  outline: 3px solid rgba(111, 59, 232, 0.15);
+  outline-offset: 2px;
+}
+
+.coupon-book-like-form .field input.field-date-sr-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.coupon-book-like-form .field-date-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 14px;
+  margin: 0;
+  border: none;
+  border-radius: 15px;
+  background: transparent;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: #47326F;
+  cursor: pointer;
+  text-align: left;
+}
+
+.coupon-book-like-form .field-date-trigger:focus {
+  outline: none;
+}
+
+.coupon-book-like-form .field-date-cal-icon {
+  flex-shrink: 0;
+  color: #47326F;
+}
+
+.coupon-book-like-form .field-file-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: var(--fw-regular);
+  color: #4c3a6e;
+  margin-bottom: 2px;
+}
+
+/* ── Modal image upload ──────────────────────────── */
+.modal-img-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 84px;
+  border: 2px dashed rgba(111, 59, 232, 0.3);
+  border-radius: 12px;
+  background: #FAF8FF;
+  color: #8B5CF6;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+.modal-img-upload-btn:hover {
+  background: rgba(111, 59, 232, 0.06);
+  border-color: rgba(111, 59, 232, 0.5);
+}
+
+.modal-img-preview-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+}
+
+.modal-img-preview {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  border: 1px solid rgba(111, 59, 232, 0.15);
+}
+
+.modal-img-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(30, 27, 75, 0.6);
+  color: #ffffff;
+  transition: background 0.15s;
+}
+.modal-img-remove-btn:hover {
+  background: rgba(220, 38, 38, 0.8);
+}
+
+/* ── Modal error / actions ───────────────────────── */
+.modal-error {
+  font-size: 0.75rem;
+  color: #DC2626;
+  font-weight: 500;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.modal-btn-cancel {
+  flex: 1;
+  height: 42px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(111, 59, 232, 0.25);
+  background: transparent;
+  color: #8B7AB8;
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  transition: background 0.15s;
+}
+.modal-btn-cancel:hover:not(:disabled) {
+  background: var(--primary-pale);
+}
+.modal-btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.modal-btn-save {
+  flex: 2;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #8B5CF6 0%, #6F3BE8 100%);
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  box-shadow: 0 4px 14px rgba(111, 59, 232, 0.28);
+  transition: opacity 0.15s;
+}
+.modal-btn-save:hover:not(:disabled) { opacity: 0.9; }
+.modal-btn-save:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── History modal ───────────────────────────────── */
+.modal-header--history {
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-header-text-block {
+  min-width: 0;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.modal-title--history-name {
+  font-size: 0.875rem;
+  line-height: 1.35;
+  word-break: break-word;
+  font-weight: var(--fw-medium);
+}
+
+.modal-history-balance {
+  margin: 5px 0 0;
+  font-size: 0.8125rem;
+  font-weight: var(--fw-regular);
+  color: #4c3a6e;
+}
+
+.history-loading,
+.history-error,
+.history-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-size: 0.8125rem;
+  color: #8B7AB8;
+  text-align: center;
+}
+
+.history-error {
+  color: #DC2626;
+}
+
+.history-row-error {
+  margin: 0 20px 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  color: #B91C1C;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 10px;
+}
+
+.history-table-wrap {
+  overflow-x: auto;
+  padding: 12px 20px 4px;
+}
+
+.history-table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.history-table th {
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: var(--fw-medium);
+  color: #7C5CBF;
+  background: #FAF8FF;
+  border-bottom: 2px solid rgba(111, 59, 232, 0.18);
+  white-space: nowrap;
+}
+
+.history-th-date,
+.history-th-amount {
+  text-align: center;
+}
+
+.history-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(111, 59, 232, 0.08);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.history-table tbody tr:hover td {
+  background: #FAF8FF;
+}
+
+.history-th-date,
+.history-td-date {
+  min-width: 5.5rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.history-th-amount,
+.history-td-amount {
+  min-width: 5rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.history-td-date {
+  font-size: 12px;
+  color: #9A8CBF;
+  white-space: nowrap;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.history-td-amount {
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: #DC2626;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.history-th-actions {
+  width: auto;
+  min-width: 3.75rem;
+  padding-left: 6px;
+  padding-right: 6px;
+  text-align: center;
+}
+
+.history-td-actions {
+  width: auto;
+  min-width: 3.75rem;
+  padding: 6px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.history-actions-row {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.history-td-edit {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.history-edit-date,
+.history-edit-amount {
+  width: 100%;
+  max-width: 9.5rem;
+  margin: 0 auto;
+  display: block;
+  box-sizing: border-box;
+  padding: 7px 9px;
+  border: 1px solid #DCCFFD;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  text-align: center;
+}
+
+.history-edit-date:focus,
+.history-edit-amount:focus {
+  outline: 2px solid rgba(111, 59, 232, 0.2);
+  outline-offset: 1px;
+}
+
+.history-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(111, 59, 232, 0.22);
+  background: #fff;
+  color: #6F3BE8;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+
+.history-icon-btn:hover:not(:disabled) {
+  background: var(--primary-pale);
+}
+
+.history-icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.history-icon-btn--ok {
+  color: #059669;
+  border-color: rgba(5, 150, 105, 0.35);
+}
+
+.history-icon-btn--danger {
+  color: #DC2626;
+  border-color: rgba(220, 38, 38, 0.28);
+}
+
+.history-tfoot-row td {
+  padding: 10px 10px;
+  border-top: 2px solid rgba(111, 59, 232, 0.18);
+  font-weight: var(--fw-medium);
+  font-size: 13px;
+  color: #4C3A6E;
+  background: #FAF8FF;
+}
+
+.history-td-foot-label {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-tfoot-row .history-td-amount {
+  color: var(--primary-dark);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ── Image viewer ────────────────────────────────── */
+.viewer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 30, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.viewer-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+  transition: background 0.15s;
+}
+.viewer-close-btn:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+.viewer-img-wrap {
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-img {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* ── Confirm modal ───────────────────────────────── */
+.confirm-sheet {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px 20px 20px;
+  width: min(320px, 90vw);
+  box-shadow: 0 8px 32px rgba(30, 27, 75, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.confirm-msg {
+  font-size: 0.875rem;
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  text-align: center;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-btn-cancel {
+  flex: 1;
+  height: 40px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(111, 59, 232, 0.22);
+  background: transparent;
+  color: #8B7AB8;
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  transition: background 0.15s;
+}
+.confirm-btn-cancel:hover {
+  background: var(--primary-pale);
+}
+
+.confirm-btn-ok {
+  flex: 1;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #8B5CF6 0%, #6F3BE8 100%);
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  box-shadow: 0 3px 10px rgba(111, 59, 232, 0.25);
+  transition: opacity 0.15s;
+}
+.confirm-btn-ok:hover { opacity: 0.9; }
+
+.confirm-btn-ok--danger {
+  background: linear-gradient(135deg, #F87171, #DC2626);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25);
+}
+
+/* ── .env 없을 때 안내 ───────────────────────────── */
+.env-missing {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: var(--bg);
+  box-sizing: border-box;
+}
+
+.env-missing-card {
+  max-width: 520px;
+  width: 100%;
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 22px;
+  box-shadow: 0 8px 28px rgba(111, 59, 232, 0.12);
+}
+
+.env-missing-title {
+  font-size: 1rem;
+  font-weight: var(--fw-bold);
+  color: #2F1B69;
+  margin: 0 0 14px;
+}
+
+.env-missing-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #4C3A6E;
+  margin: 0 0 12px;
+}
+
+.env-missing-list {
+  margin: 0 0 16px;
+  padding-left: 1.2em;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #4C3A6E;
+}
+
+.env-missing-list code {
+  font-size: 12px;
+  background: #EDE9FE;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.env-missing-note {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #6B5B8C;
+  margin: 0 0 10px;
+}
+
+.env-missing-note:last-child {
+  margin-bottom: 0;
+}
+
+.env-missing-note code {
+  font-size: 12px;
+  background: #EDE9FE;
+  padding: 1px 6px;
+  border-radius: 4px;
+  word-break: break-all;
+}
