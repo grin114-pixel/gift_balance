@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { Lock, Wallet } from 'lucide-react'
-import { supabase, isSupabaseConfigured } from './lib/supabase'
+import { useState } from 'react'
+import { Wallet } from 'lucide-react'
+import { isSupabaseConfigured } from './lib/supabase'
 import { useCoupons } from './hooks/useCoupons'
 import { deleteImage } from './lib/imageUtils'
 import CouponCard from './components/CouponCard'
@@ -8,22 +8,9 @@ import CouponModal from './components/CouponModal'
 import HistoryModal from './components/HistoryModal'
 import ImageViewerModal from './components/ImageViewerModal'
 import ConfirmModal from './components/ConfirmModal'
-import LoginPage from './components/LoginPage'
-import AdminPage from './components/AdminPage'
 import './App.css'
 
-const REMEMBER_KEY = 'gift-balance.remember-device'
-const SESSION_ONLY_KEY = 'gift-balance.session-only'
-
-function usePathname() {
-  const [pathname, setPathname] = useState(() => window.location.pathname)
-  useEffect(() => {
-    const onPop = () => setPathname(window.location.pathname)
-    window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
-  }, [])
-  return pathname
-}
+const HEADER_ICON = '/header-app-icon.png'
 
 function EnvMissingScreen() {
   return (
@@ -41,7 +28,7 @@ function EnvMissingScreen() {
           파일 이름이 <code>.env.txt</code>가 아닌 <code>.env</code>인지 확인하세요. 저장한 뒤 터미널에서 서버를 끄고(Ctrl+C) <code>npm run dev</code>를 다시 실행해야 반영됩니다.
         </p>
         <p className="env-missing-note">
-          개발 서버는 보통 <code>http://127.0.0.1:5200/</code> 입니다. 포트가 바쁘면 터미널에 나온 <strong>Local</strong> 주소로 접속하세요.
+          로그인 없이 쓰려면 Supabase SQL Editor에서 <code>supabase_no_auth.sql</code>도 한 번 실행해 주세요.
         </p>
       </div>
     </div>
@@ -52,105 +39,12 @@ export default function App() {
   if (!isSupabaseConfigured) {
     return <EnvMissingScreen />
   }
-
-  const pathname = usePathname()
-  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-    return (
-      <AdminPage
-        onBack={() => {
-          window.history.pushState({}, '', '/')
-          window.dispatchEvent(new PopStateEvent('popstate'))
-        }}
-      />
-    )
-  }
-  return <AuthGate />
+  return <MainApp />
 }
 
-function AuthGate() {
-  const [session, setSession] = useState(undefined)
-  const [recoveryMode, setRecoveryMode] = useState(false)
-  const passwordRecoveryBypassRef = useRef(false)
-
-  useEffect(() => {
-    const syncRecoveryFromUrl = () => {
-      if (typeof window === 'undefined') return
-      try {
-        const fromHash = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('type')
-        const fromSearch = new URLSearchParams(window.location.search).get('type')
-        if (fromHash === 'recovery' || fromSearch === 'recovery') {
-          passwordRecoveryBypassRef.current = true
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-    syncRecoveryFromUrl()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        passwordRecoveryBypassRef.current = true
-        setRecoveryMode(true)
-        setSession(sess ?? null)
-        return
-      }
-      setSession(sess ?? null)
-      if (event === 'SIGNED_OUT') {
-        setRecoveryMode(false)
-        passwordRecoveryBypassRef.current = false
-        window.localStorage.removeItem(REMEMBER_KEY)
-        window.sessionStorage.removeItem(SESSION_ONLY_KEY)
-      }
-    })
-
-    const runInitialSessionCheck = async () => {
-      await new Promise((r) => setTimeout(r, 0))
-      syncRecoveryFromUrl()
-      const { data } = await supabase.auth.getSession()
-      const sess = data.session
-      if (sess) {
-        const remember = window.localStorage.getItem(REMEMBER_KEY) === 'true'
-        const sessionOnly = window.sessionStorage.getItem(SESSION_ONLY_KEY) === 'true'
-        if (!remember && !sessionOnly && !passwordRecoveryBypassRef.current) {
-          await supabase.auth.signOut()
-          setSession(null)
-          return
-        }
-      }
-      setSession(sess ?? null)
-    }
-    void runInitialSessionCheck()
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  if (session === undefined) {
-    return (
-      <div className="auth-shell">
-        <div className="auth-checking">
-          <div className="spinner" />
-        </div>
-      </div>
-    )
-  }
-
-  if (!session || recoveryMode) {
-    return (
-      <LoginPage
-        key={recoveryMode ? 'password-recovery' : 'auth'}
-        recoveryMode={recoveryMode}
-        onPasswordReset={() => setRecoveryMode(false)}
-      />
-    )
-  }
-
-  return <MainApp session={session} />
-}
-
-function MainApp({ session }) {
-  const userId = session?.user?.id
+function MainApp() {
   const { coupons, loading, addCoupon, updateCoupon, deleteCoupon, useAmount, fetchHistory, updateHistoryEntry, deleteHistoryEntry } =
-    useCoupons(userId)
+    useCoupons()
 
   const [showCouponModal, setShowCouponModal] = useState(false)
   const [editCoupon, setEditCoupon] = useState(null)
@@ -190,10 +84,6 @@ function MainApp({ session }) {
     setDeleteTarget(null)
   }
 
-  const handleLock = async () => {
-    await supabase.auth.signOut()
-  }
-
   return (
     <>
       <div className="app">
@@ -201,23 +91,11 @@ function MainApp({ session }) {
           <div className="header-inner">
             <div className="header-left">
               <div className="app-header-brand-grid">
-                <span className="app-header-wallet" aria-hidden>
-                  <Wallet size={24} strokeWidth={1.75} />
+                <span className="app-header-icon" aria-hidden>
+                  <img src={HEADER_ICON} alt="" className="app-header-icon-img" />
                 </span>
                 <h1 className="app-title">잔액 얼마</h1>
-                <p className="app-header-tagline">내 쿠폰 잔액을 한눈에</p>
               </div>
-            </div>
-            <div className="header-right">
-              <button
-                type="button"
-                className="header-lock-btn"
-                onClick={handleLock}
-                title="로그아웃"
-                aria-label="로그아웃"
-              >
-                <Lock size={20} strokeWidth={1.85} aria-hidden />
-              </button>
             </div>
           </div>
         </header>
@@ -268,7 +146,6 @@ function MainApp({ session }) {
           onClose={handleCloseModal}
           onSave={handleSave}
           initialData={editCoupon}
-          userId={userId}
         />
       )}
 
@@ -292,8 +169,8 @@ function MainApp({ session }) {
           cancelText="취소"
           confirmText="삭제"
           danger
-          onClose={() => setDeleteTarget(null)}
           onConfirm={handleConfirmDelete}
+          onClose={() => setDeleteTarget(null)}
         />
       )}
     </>

@@ -27,10 +27,10 @@ function safeFileName(originalName) {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext || 'jpg'}`
 }
 
-export async function uploadImage(file, { userId = 'unknown' } = {}) {
+export async function uploadImage(file) {
   const blob = await compressFile(file)
   const fileName = safeFileName(file.name)
-  const path = `${userId}/${fileName}`
+  const path = `uploads/${fileName}`
 
   const { error } = await supabase.storage
     .from(BUCKET)

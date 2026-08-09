@@ -40,7 +40,7 @@ function openNativeDatePicker(inputEl) {
   inputEl.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
 }
 
-export default function CouponModal({ onClose, onSave, initialData = null, userId }) {
+export default function CouponModal({ onClose, onSave, initialData = null }) {
   const isEdit = !!initialData
   const [expiresAt, setExpiresAt] = useState(() => initialExpiresAt(initialData))
 
@@ -96,7 +96,7 @@ export default function CouponModal({ onClose, onSave, initialData = null, userI
         if (isEdit && imageUrl && !imageUrl.startsWith('blob:')) {
           await deleteImage(imageUrl)
         }
-        finalImageUrl = await uploadImage(imageFile, { userId })
+        finalImageUrl = await uploadImage(imageFile)
       } else if (!imagePreview && isEdit && initialData?.image_url) {
         await deleteImage(initialData.image_url)
         finalImageUrl = ''
@@ -131,7 +131,6 @@ export default function CouponModal({ onClose, onSave, initialData = null, userI
             <span>쿠폰 이름</span>
             <input
               type="text"
-              placeholder="예) 스타벅스 쿠폰"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
@@ -168,7 +167,6 @@ export default function CouponModal({ onClose, onSave, initialData = null, userI
               type="text"
               inputMode="numeric"
               autoComplete="off"
-              placeholder="예: 10,000"
               value={formatAmountInput(balanceDigits)}
               onChange={(e) => {
                 setBalanceDigits(digitsOnly(e.target.value))

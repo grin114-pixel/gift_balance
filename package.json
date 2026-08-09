@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "vercel dev",
     "icons": "node scripts/generate-pwa-icons.mjs",
     "build": "node scripts/generate-pwa-icons.mjs && vite build",
     "lint": "eslint .",

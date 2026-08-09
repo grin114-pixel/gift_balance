@@ -9,7 +9,7 @@ function toNum(v) {
   return Number.isFinite(n) ? n : 0
 }
 
-export function useCoupons(userId) {
+export function useCoupons() {
   const [coupons, setCoupons] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -17,16 +17,14 @@ export function useCoupons(userId) {
     [...arr].sort((a, b) => a.expiry_date.localeCompare(b.expiry_date))
 
   const fetchCoupons = useCallback(async () => {
-    if (!userId) return
     setLoading(true)
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
-      .eq('user_id', userId)
       .order('expiry_date', { ascending: true })
     if (!error && data) setCoupons(data)
     setLoading(false)
-  }, [userId])
+  }, [])
 
   useEffect(() => {
     fetchCoupons()
@@ -35,7 +33,7 @@ export function useCoupons(userId) {
   const addCoupon = async (couponData) => {
     const { data, error } = await supabase
       .from('coupons')
-      .insert([{ ...couponData, user_id: userId }])
+      .insert([couponData])
       .select()
       .single()
     if (!error && data) {
@@ -84,7 +82,6 @@ export function useCoupons(userId) {
     const { error: histErr } = await supabase.from('usage_history').insert([
       {
         coupon_id: coupon.id,
-        user_id: userId,
         amount: amt,
         memo: memo || null,
         used_at: new Date().toISOString(),
@@ -111,15 +108,13 @@ export function useCoupons(userId) {
       .eq('coupon_id', couponId)
       .order('used_at', { ascending: false })
     return { data: data ?? [], error }
-  }, [userId])
+  }, [])
 
-  /** 사용 내역 삭제 → 해당 금액만큼 잔액 복구 */
   const deleteHistoryEntry = useCallback(async (coupon, historyRow) => {
     const { data: rowFresh, error: rowErr } = await supabase
       .from('usage_history')
       .select('id, amount, coupon_id')
       .eq('id', historyRow.id)
-      .eq('user_id', userId)
       .maybeSingle()
     if (rowErr) return { error: rowErr }
     if (!rowFresh || rowFresh.coupon_id !== coupon.id) {
@@ -142,7 +137,6 @@ export function useCoupons(userId) {
       .from('usage_history')
       .delete()
       .eq('id', historyRow.id)
-      .eq('user_id', userId)
       .select('id')
       .maybeSingle()
     if (delErr) return { error: delErr }
@@ -160,15 +154,13 @@ export function useCoupons(userId) {
       setCoupons((prev) => sortByExpiry(prev.map((c) => (c.id === coupon.id ? data : c))))
     }
     return { data, error: updErr }
-  }, [userId])
+  }, [])
 
-  /** 사용 내역 수정(금액·내역·일자) → 잔액 차액 반영 */
   const updateHistoryEntry = useCallback(async (coupon, historyRow, { amount, memo, usedAtIso }) => {
     const { data: rowFresh, error: rowErr } = await supabase
       .from('usage_history')
       .select('id, amount, coupon_id')
       .eq('id', historyRow.id)
-      .eq('user_id', userId)
       .maybeSingle()
     if (rowErr) return { error: rowErr }
     if (!rowFresh || rowFresh.coupon_id !== coupon.id) {
@@ -201,7 +193,6 @@ export function useCoupons(userId) {
       .from('usage_history')
       .update(payload)
       .eq('id', historyRow.id)
-      .eq('user_id', userId)
       .select('id')
       .maybeSingle()
 
@@ -209,7 +200,7 @@ export function useCoupons(userId) {
     if (!updated) {
       return {
         error: new Error(
-          '내역이 저장되지 않았어요. Supabase에서 usage_history UPDATE 정책(history_update_own)이 있는지 확인해 주세요.',
+          '내역이 저장되지 않았어요. Supabase에서 usage_history UPDATE 정책이 있는지 확인해 주세요.',
         ),
       }
     }
@@ -229,7 +220,7 @@ export function useCoupons(userId) {
       setCoupons((prev) => sortByExpiry(prev.map((c) => (c.id === coupon.id ? data : c))))
     }
     return { data, error: updErr }
-  }, [userId])
+  }, [])
 
   return {
     coupons,

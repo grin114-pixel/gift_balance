@@ -29,19 +29,13 @@ export default defineConfig({
     port: 5200,
     strictPort: false,
     open: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
-    },
   },
   plugins: [
     printGiftBalanceUrl(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['wallet-app-icon.svg', 'pwa-192.png', 'pwa-512.png', 'apple-touch-icon.png'],
+      includeAssets: ['header-app-icon.png', 'favicon-32.png', 'pwa-192.png', 'pwa-512.png', 'apple-touch-icon.png'],
       manifest: {
         name: '잔액 얼마',
         short_name: '잔액 얼마',

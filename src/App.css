@@ -12,14 +12,14 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: #FFFFFF;
+  background: var(--header-bg);
   border-bottom: 1px solid rgba(111, 59, 232, 0.08);
 }
 
 .header-inner {
   max-width: 680px;
   margin: 0 auto;
-  padding: 10px 24px;
+  padding: 10px 24px 10px 12px;
   min-height: 56px;
   box-sizing: border-box;
   display: flex;
@@ -32,23 +32,25 @@
 }
 
 .app-header-brand-grid {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 12px;
-  row-gap: 4px;
+  display: flex;
   align-items: center;
+  gap: 12px;
   min-width: 0;
 }
 
-.app-header-wallet {
+.app-header-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #6F3BE8;
-  grid-column: 1;
-  grid-row: 1;
+  line-height: 0;
+}
+
+.app-header-icon-img {
+  width: 38px;
+  height: 38px;
+  display: block;
+  object-fit: contain;
 }
 
 .app-title {
@@ -59,21 +61,7 @@
   color: #2F1B69;
   line-height: 1.15;
   margin: 0;
-  grid-column: 2;
-  grid-row: 1;
   min-width: 0;
-}
-
-.app-header-tagline {
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  color: #9A8CBF;
-  font-weight: var(--fw-regular);
-  letter-spacing: -0.01em;
-  line-height: 1.45;
-  margin: 0;
-  grid-column: 1 / -1;
-  grid-row: 2;
 }
 
 .header-right {
@@ -122,6 +110,11 @@
   color: var(--primary-light);
   font-size: 14px;
   font-weight: var(--fw-medium);
+}
+
+.loading-state--full {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .spinner {
@@ -202,8 +195,8 @@
   align-items: center;
   gap: 10px;
   padding: 12px 20px;
-  background: #E4E2EF;
-  border-bottom: 1px solid rgba(111, 59, 232, 0.12);
+  background: var(--primary-pale);
+  border-bottom: 1px solid rgba(111, 59, 232, 0.08);
 }
 
 .coupon-card-top-actions {
